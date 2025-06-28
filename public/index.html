@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORVO</title>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="userCount">0</div>
+    <div id="userList">0</div>
+    <div class="container">
+        <!--to revieves messeges  -->
+    </div>
+
+    <!-- form to send text -->
+    <form action="#" id="form">
+        
+        <button id="toggleBtn">Join</button>
+        <input type="text" placeholder="Type your message here..." id="inpMsg" >
+        <button id="submit"> SEND</button>
+    </form>
+
+    <!-- Socket.IO client library -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="client.js"></script>
+</body>
+</html>
