@@ -1,21 +1,40 @@
 // File: public/client.js
 const socket = io();
 
-// fetching DOM 
+
+// fetching login DOM
+const profileModal = document.getElementById('profileModal');
+const saveProfileBtn = document.getElementById('saveProfileBtn');
+const nameInput = document.getElementById('nameInput');
+const ageInput = document.getElementById('ageInput');
+const sexInput = document.getElementById('sexInput');
+const chatSection = document.getElementById('chatSection');
+let name = "";
+let age =''
+let sex =''
+
+// when user saves profile
+saveProfileBtn.addEventListener('click', () => {
+    name = nameInput.value.trim();
+    age = ageInput.value.trim();
+    sex = sexInput.value;
+    if (!name || !age || !sex) {
+        alert("Please fill all fields!");
+        return;
+    }
+    profileModal.style.display = 'none';
+    chatSection.style.display = 'block';
+    socket.emit('user-online', { name, age, sex }); //tells user isOnline
+    appendMessage("System", "Hit Join button to start chatting with someone.");
+});
+
+
+// message form DOM 
 const form = document.getElementById('form');
 const inpMsg = document.getElementById('inpMsg');
 const messageContainer = document.querySelector('.container');
 const toggleBtn = document.getElementById('toggleBtn');
 
-
-
-let name = "";
-while (!name) {
-    name = prompt("Enter your name to join the chat");
-    if(name){
-        break;
-    }
-}
 
 
 socket.on('user-joined', name =>{
@@ -30,6 +49,35 @@ socket.on('receive', data =>{
     appendMessage(`${data.name}`, data.message);
 });
 
+// When paired
+socket.on('paired', ({ partner }) => {
+    appendMessage("System", `You are now chatting with: ${partner}`);
+    toggleBtn.innerText = "Leave";
+    NEW = true;
+});
+
+// When partner leaves
+socket.on('partner-left', (data) => {
+    appendMessage("System", data.msg);
+    toggleBtn.innerText = "NEW";
+    NEW = false;
+    // Optionally clear chat UI or disable input
+});
+socket.on('you-left', (data) => {
+    appendMessage("System", data.msg);
+    toggleBtn.innerText = "Join";
+    NEW = false;
+    // Optionally disable input here
+});
+
+
+socket.on('partner-left', () => {
+    toggleBtn.innerText = "NEW";
+    toggleBtn.disabled = false;
+    // Optionally show a message: "Partner left. Click NEW to find another."
+    // User must click NEW to rejoin the waiting queue.
+});
+
 
 form.addEventListener('submit', (e)=>{
     e.preventDefault();
@@ -39,7 +87,7 @@ form.addEventListener('submit', (e)=>{
     if (!msg) return; 
     //dont send if msg is empty
 
-    appendMessage("You:", msg);
+    appendMessage("You", msg);
     socket.emit('send', msg);
     inpMsg.value = ''; // clear input field after sending message 
 
@@ -85,19 +133,23 @@ updateUserCount();
 setInterval(updateUserCount, 400);
 
 
-let NEW = false;
+let NEW = false; // <-- start as false
 toggleBtn.addEventListener('click', (e) => {
     e.preventDefault();
+    if (!name || !age || !sex) {
+        alert("Please fill your profile first!");
+        return;
+    }
     if (!NEW) {
-        // new chat logic
-        socket.emit('new-user-joined', name);
+        // User wants to join waiting queue
+        socket.emit('new-user-joined', { name, age, sex });
         NEW = true;
         toggleBtn.innerText = "Leave";
     } else {
-        // Leave logic
+        // User wants to leave
         socket.emit('leave-room');
         NEW = false;
-        toggleBtn.innerText = "NEW";
+        toggleBtn.innerText = "Join";
         alert('You have left the chat.');
     }
 });

@@ -2,28 +2,42 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CORVO</title>
-    
+    <title>Corvo Chat</title>
+    <meta name="viewport" content="width=500, initial-scale=1">
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-    <div id="userCount">0</div>
-    <div id="userList">0</div>
-    <div class="container">
-        <!--to revieves messeges  -->
+    <!-- Profile Modal -->
+    <div id="profileModal" style="display: block; position: fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:10; align-items:center; justify-content:center;">
+        <div style="background:#fff; padding:30px; border-radius:8px; width:300px; margin:100px auto;">
+            <h2>Enter Your Profile</h2>
+            <label>Name: <input id="nameInput" type="text" maxlength="20" required></label><br><br>
+            <label>Age: <input id="ageInput" type="number" min="13" max="99" required></label><br><br>
+            <label>Sex: 
+                <select id="sexInput" required>
+                    <option value="">Select</option>
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                    <option value="O">Other</option>
+                </select>
+            </label><br><br>
+            <button id="saveProfileBtn">Save</button>
+        </div>
     </div>
 
-    <!-- form to send text -->
-    <form action="#" id="form">
-        
-        <button id="toggleBtn">Join</button>
-        <input type="text" placeholder="Type your message here..." id="inpMsg" >
-        <button id="submit"> SEND</button>
-    </form>
+    <!-- Chat Section -->
+    <div id="chatSection" style="display:none;">
+        <h1>Corvo Chat</h1>
+        <div id="userCount" style="margin-bottom:5px;">Users online: 0</div>
+        <div id="userList" style="margin-bottom:10px; font-size:0.9em; color:#555;"></div>
+        <div class="container"></div>
+        <form id="form" autocomplete="off" style="margin-top:10px;">
+            <input id="inpMsg" type="text" placeholder="Type your message..." style="width:70%;" autocomplete="off" />
+            <button type="submit">Send</button>
+            <button id="toggleBtn" type="button" style="margin-left:10px;">Join</button>
+        </form>
+    </div>
 
-    <!-- Socket.IO client library -->
     <script src="/socket.io/socket.io.js"></script>
     <script src="client.js"></script>
 </body>
